@@ -5,9 +5,14 @@ from .serializers import TriviaQuestionSerializer, TriviaCategorySerializer
 from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework import generics
+from rest_framework import status, generics, filters
+from rest_framework.pagination import PageNumberPagination
 
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 4
+    page_size_query_param = 'page_size'
+    max_page_size = 10
 
 # Create your views here.
 
@@ -16,81 +21,44 @@ def index(request):
     return HttpResponse("Trivia Index.")
 
 
-class QuestionList(APIView):
-    def get(self, request, format=None):
-        questions = TriviaQuestion.objects.all()
-        serializer = TriviaQuestionSerializer(questions, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = TriviaQuestionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class QuestionList(generics.ListCreateAPIView):
+    queryset = TriviaQuestion.objects.all()
+    serializer_class = TriviaQuestionSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ['question_text']
 
 
-class QuestionDetail(APIView):
-
-    def get_object(self, pk):
-        try:
-            return TriviaQuestion.objects.get(pk=pk)
-        except TriviaQuestion.DoesNotExist:
-            raise Http404
-
-    def get(self, request, pk, format=None):
-        trivia_question = self.get_object(pk)
-        serializer = TriviaQuestionSerializer(trivia_question)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def put(self, request, pk, format=None):
-        trivia_question = self.get_object(pk)
-        serializer = TriviaQuestionSerializer(trivia_question, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format=None):
-        trivia_question = self.get_object(pk)
-        trivia_question.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = TriviaQuestion.objects.all()
+    serializer_class = TriviaQuestionSerializer
 
 
-class CategoryList(APIView):
-    def get(self, request):
-        categories = TriviaCategory.objects.all()
-        serializer = TriviaCategorySerializer(categories, many=True)
-        return Response(serializer.data)
-    def post(self, request):
-        serializer = TriviaCategorySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class CategoryList(generics.ListCreateAPIView):
+    queryset = TriviaCategory.objects.all()
+    serializer_class = TriviaCategorySerializer
 
 
-class CategoryDetail(APIView):
-    def get_category(self, pk):
-        try:
-            return TriviaCategory.objects.get(pk=pk)
-        except TriviaCategory.DoesNotExist:
-            raise Http404
+class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = TriviaCategory.objects.all()
+    serializer_class = TriviaCategorySerializer
 
-    def get(self, request, pk):
-        trivia_category = self.get_category(pk)
-        serializer = TriviaCategorySerializer(trivia_category)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def put(self, request, pk):
-        trivia_category = self.get_category(pk)
-        serializer = TriviaCategorySerializer(trivia_category, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        trivia_category = self.get_category(pk)
-        trivia_category.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+"""
+def vote(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    try:
+        selected_choice = question.choice_set.get(pk=request.POST['choice'])
+    except (KeyError, Choice.DoesNotExist):
+        # Redisplay the question voting form
+        return render(request, 'polls/details.html', {
+            'question': question,
+            'error_message': "You didn't select a choice.",
+        })
+    else:
+        selected_choice.votes = F('votes') + 1
+        selected_choice.save()
+        # Always return an HttpResponseRedirect after successfully dealing
+        # with POST data. This prevents data from being posted twice if a
+        # user hits the Back button.
+        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+"""

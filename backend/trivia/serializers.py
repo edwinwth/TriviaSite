@@ -11,4 +11,6 @@ class TriviaCategorySerializer(serializers.ModelSerializer):
 class TriviaQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = TriviaQuestion
-        fields = '__all__'
+        fields = ['id', 'question_text', 'answer_text', 'trivia_category', 'thumbs_up_count', 'thumbs_down_count',
+                  'creation_date']
+        read_only_fields = ['id', 'thumbs_up_count', 'thumbs_down_count', 'creation_date']
