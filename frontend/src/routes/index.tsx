@@ -5,10 +5,13 @@ import { publicRoutes } from './public';
 
 export const AppRoutes = () => {
 
-  const commonRoutes = [{ path: '/', element: <MainLayout /> }];
+  const commonRoutes = [
+    { path: 'totd', element: <div>TOTD</div> },
+    { path: 'trivia_list', element: <div>Trivia List</div> }
+  ];
 
 
   const element = useRoutes([...commonRoutes]);
 
-  return <>{element}</>;
+  return <MainLayout>{element}</MainLayout>;
 };
