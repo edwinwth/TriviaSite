@@ -1,5 +1,10 @@
-import { Spinner } from "@nextui-org/react";
+import { Grid, Spinner, styled } from "@nextui-org/react";
 import { useTrivia } from "../api/getTrivia";
+import { TriviaCard } from "./TriviaCard";
+
+const Box = styled("div", {
+  boxSizing: "border-box",
+});
 
 export const TrivaList = () => {
   const trivaQuery = useTrivia();
@@ -14,5 +19,13 @@ export const TrivaList = () => {
 
   if (!trivaQuery.data) return <>No Data</>;
 
-  return <div>{trivaQuery.data.results.map((trivia) => trivia.question_text)}</div>;
+  return (
+    <Grid.Container gap={2} justify="center">
+      {trivaQuery.data.results.map((trivia) => (
+        <Grid>
+          <TriviaCard trivia={trivia} />
+        </Grid>
+      ))}
+    </Grid.Container>
+  );
 };

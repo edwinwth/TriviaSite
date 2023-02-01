@@ -1,0 +1,44 @@
+
+.card {
+  /* Sizing */
+  height: 200px;
+  width: 300px;
+  
+  transform-style: preserve-3d;
+
+  /* Content Alignment */
+  position: relative;
+
+  /* Styling */
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.8);
+  transition: 1000ms;
+}
+
+.card-front,
+.card-back {
+  /* Sizing */
+  height: 100%;
+  width: 100%;
+
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+
+  /* Alignment */
+  position: absolute;
+
+
+  /* Content Styling */
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.9);
+  
+}
+
+.card:hover {
+  transform: rotateY(180deg);
+}
+
+.card-front {
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
