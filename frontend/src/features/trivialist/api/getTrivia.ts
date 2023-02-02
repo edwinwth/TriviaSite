@@ -4,7 +4,7 @@ import { ExtractFnReturnType, QueryConfig } from "@/lib/react-query";
 import { axios } from "../../../lib/axios";
 
 export const getTrivia = (): Promise<TriviaAPIResult> => {
-    return axios.get('/trivia/question/')
+    return axios.get('/trivia/question/?page_size=8')
 }
 
 type QueryFnType = typeof getTrivia;
