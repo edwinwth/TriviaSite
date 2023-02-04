@@ -1,31 +1,39 @@
-import { Grid, Spinner, styled } from "@nextui-org/react";
+import { Grid, Spinner, styled, Input, Row } from "@nextui-org/react";
+import { useEffect, useState } from "react";
 import { useTrivia } from "../api/getTrivia";
 import { TriviaCard } from "./TriviaCard";
+import { TriviaSearchBar } from "./TriviaSearchBar";
 
 export const TrivaList = () => {
-  const trivaQuery = useTrivia();
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState();
 
-  if (trivaQuery.isLoading) {
-    return (
-      <div className="w-full h-48 flex justify-center items-center">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
-  if (!trivaQuery.data) return <>No Data</>;
+  const trivaQuery = useTrivia({
+    queryParams: { search: search, trivia_category: filter },
+  });
 
   return (
-    <Grid.Container gap={4} justify="center">
-      <Grid xs={6} lg={10}>
-        <Grid.Container gap={2} justify="flex-start">
-          {trivaQuery.data.results.map((trivia) => (
-            <Grid xs={12} sm={6} lg={4}>
-              <TriviaCard trivia={trivia} />
-            </Grid>
-          ))}
+    <>
+      <TriviaSearchBar onSearchChange={setSearch} onFilterChange={setFilter} />
+      {trivaQuery.isLoading ? (
+        <div className="w-full h-48 flex justify-center items-center">
+          <Spinner size="lg" />
+        </div>
+      ) : !trivaQuery.data ? (
+        <>No Data</>
+      ) : (
+        <Grid.Container gap={4} justify="center">
+          <Grid xs={6} lg={10}>
+            <Grid.Container gap={2} justify="flex-start">
+              {trivaQuery.data.results.map((trivia) => (
+                <Grid xs={12} sm={6} lg={4}>
+                  <TriviaCard trivia={trivia} />
+                </Grid>
+              ))}
+            </Grid.Container>
+          </Grid>
         </Grid.Container>
-      </Grid>
-    </Grid.Container>
+      )}
+    </>
   );
 };

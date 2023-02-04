@@ -14,3 +14,8 @@ export type Trivia = {
   creation_date: Date;
   trivia_category: number[];
 }
+
+export type TriviaCategory = {
+  id: number;
+  category_name: string;
+}

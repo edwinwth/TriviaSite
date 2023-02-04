@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from django_filters.rest_framework import DjangoFilterBackend
+
 from .models import TriviaCategory, TriviaQuestion
 from .serializers import TriviaQuestionSerializer, TriviaCategorySerializer
 from rest_framework.views import APIView
@@ -10,9 +12,9 @@ from rest_framework.pagination import PageNumberPagination
 
 
 class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 4
+    page_size = 12
     page_size_query_param = 'page_size'
-    max_page_size = 10
+    max_page_size = 20
 
 # Create your views here.
 
@@ -25,8 +27,10 @@ class QuestionList(generics.ListCreateAPIView):
     queryset = TriviaQuestion.objects.all()
     serializer_class = TriviaQuestionSerializer
     pagination_class = StandardResultsSetPagination
-    filter_backends = (filters.SearchFilter, )
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['question_text']
+    filterset_fields = ['trivia_category']
+
 
 
 class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
