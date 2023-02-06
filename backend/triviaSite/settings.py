@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_filters',
     'trivia.apps.TriviaConfig',
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [

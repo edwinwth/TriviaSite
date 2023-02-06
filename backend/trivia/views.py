@@ -1,19 +1,10 @@
-from django.contrib.auth import authenticate, login
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.decorators.http import require_POST
+from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
-import json
+from rest_framework import generics, filters
+from rest_framework.pagination import PageNumberPagination
+
 from .models import TriviaCategory, TriviaQuestion
 from .serializers import TriviaQuestionSerializer, TriviaCategorySerializer
-from rest_framework.views import APIView
-from django.http import Http404
-from rest_framework.response import Response
-from rest_framework import status, generics, filters
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -21,47 +12,12 @@ class StandardResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 20
 
+
 # Create your views here.
 
 
 def index(request):
     return HttpResponse("Trivia Index.")
-
-
-@ensure_csrf_cookie
-def set_csrf_token(request):
-    return JsonResponse({"details": "CSRF cookie set"})
-
-
-@require_POST
-def login_view(request):
-    data = json.loads(request.body)
-    username = data.get('username')
-    password = data.get('password')
-    if username is None or password is None:
-        return JsonResponse({
-            "errors": {
-                "__all__": "Please enter both username and password"
-            }
-        }, status=400)
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        login(request, user)
-        return JsonResponse({"detail": "Success"})
-    return JsonResponse(
-        {"detail": "Invalid credentials"},
-        status=400,
-    )
-
-class TestAuth(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, format=None):
-        content = {
-            'user': str(request.user),  # `django.contrib.auth.User` instance.
-            'auth': str(request.auth),  # None
-        }
-        return Response(content)
 
 
 class QuestionList(generics.ListCreateAPIView):
@@ -71,7 +27,6 @@ class QuestionList(generics.ListCreateAPIView):
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['question_text']
     filterset_fields = ['trivia_category']
-
 
 
 class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -87,6 +42,7 @@ class CategoryList(generics.ListCreateAPIView):
 class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = TriviaCategory.objects.all()
     serializer_class = TriviaCategorySerializer
+
 
 """
 def vote(request, question_id):
