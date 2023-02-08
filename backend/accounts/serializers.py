@@ -35,10 +35,10 @@ class LoginSerializer(serializers.Serializer):
             if not user:
                 # If we don't have a regular user, raise a ValidationError
                 msg = 'Access denied: wrong username or password.'
-                raise serializers.ValidationError(msg, code='authorization')
+                raise serializers.ValidationError({"message": msg}, code='authorization')
         else:
             msg = 'Both "username" and "password" are required.'
-            raise serializers.ValidationError(msg, code='authorization')
+            raise serializers.ValidationError({"message": msg}, code='authorization')
         # We have a valid user, put it in the serializer's validated_data.
         # It will be used in the view.
         attrs['user'] = user
@@ -48,7 +48,7 @@ class LoginSerializer(serializers.Serializer):
 class NewUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ['id','username', 'email', 'password']
+        fields = ['id','username', 'password']
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, data):
@@ -61,10 +61,9 @@ class NewUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         username: str = validated_data['username']
-        email: str = validated_data['email']
         password: str = validated_data['password']
 
-        created_user = self.Meta.model.objects.create_user(username, email=email, password=password)
+        created_user = self.Meta.model.objects.create_user(username, password=password)
         created_user.is_active = True
 
         created_user.save()
@@ -72,7 +71,7 @@ class NewUserSerializer(serializers.ModelSerializer):
         return created_user
 
     def update(self, instance, validated_data):
-        instance.email = validated_data.get('email')
+        instance.username = validated_data.get('username')
         updated_password = validated_data.get('password')
         instance.set_password(updated_password)
 

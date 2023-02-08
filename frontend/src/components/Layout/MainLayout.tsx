@@ -3,6 +3,9 @@ import { Navbar, Button, Link, Text, styled } from "@nextui-org/react";
 import { useLocation } from "react-router-dom";
 import { Link as routerLink } from "react-router-dom";
 import { LoginModal } from "../Login/LoginModal";
+import { useSelector } from "react-redux";
+import { AuthState } from "@/stores/auth";
+import { LoginButtonGroup } from "../Login/LoginButtonGroup";
 
 const Box = styled("div", {
   boxSizing: "border-box",
@@ -18,11 +21,8 @@ interface MainLayoutProps {
 }
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const [loginModalVisible, setLoginModalVisible] = useState(false);
   const location = useLocation();
 
-  const onClickLogin = () => setLoginModalVisible(true);
-  const onCloseLogin = () => setLoginModalVisible(false);
 
   return (
     <Box
@@ -52,17 +52,10 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           ))}
         </Navbar.Content>
         <Navbar.Content>
-          <Navbar.Link color="inherit" href="#" onPress={onClickLogin}>
-            Login
-          </Navbar.Link>
-          <Navbar.Item>
-            <Button auto flat as={Link} href="#" onPress={onClickLogin}>
-              Sign Up
-            </Button>
-          </Navbar.Item>
+          <LoginButtonGroup />
         </Navbar.Content>
       </Navbar>
-      <LoginModal visible={loginModalVisible} onClose={() => onCloseLogin()} />
+      
       {children}
     </Box>
   );
