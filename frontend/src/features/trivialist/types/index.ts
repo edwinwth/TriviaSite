@@ -16,6 +16,6 @@ export type Trivia = {
 }
 
 export type TriviaCategory = {
-  id: number;
+  id: number | "all";
   category_name: string;
 }

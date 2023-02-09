@@ -15,16 +15,22 @@ export const TriviaSearchBar: React.FC<TriviaSearchBarProps> = ({
   onFilterChange,
 }) => {
   const { data: catgories } = useCategory();
-  const [selected, setSelected] = React.useState<SelectionType>(
-    new Set([])
-  );
+  const [selected, setSelected] = React.useState<SelectionType>(new Set(["all"]));
   const selectedValue = React.useMemo(
     () => Array.from(selected).join(", ").replaceAll("_", " "),
     [selected]
   );
 
+  const getDropdownDisplayValue = () => {
+    let name = catgories?.find((x) => x.id == selectedValue)?.category_name
+    if (name)
+      return name
+    else
+      return "All"
+  }
+
+
   useEffect(() => {
-    console.log(selectedValue)
     onFilterChange(selectedValue);
   }, [selectedValue]);
 
@@ -32,20 +38,20 @@ export const TriviaSearchBar: React.FC<TriviaSearchBarProps> = ({
     <Row justify="center" css={{ marginTop: 50 }} gap={2}>
       <Col css={{ width: "auto" }}>
         <Dropdown>
-          <Dropdown.Button flat>{selected}</Dropdown.Button>
+          <Dropdown.Button flat>{getDropdownDisplayValue()}</Dropdown.Button>
           <Dropdown.Menu
             aria-label="Dynamic Actions"
             items={catgories}
             selectionMode="single"
             selectedKeys={selected}
             onSelectionChange={setSelected}
+            
           >
             {(item) => {
               let dropdownItems = item as TriviaCategory;
               return (
                 <Dropdown.Item
                   key={dropdownItems.id}
-                  textValue={dropdownItems.category_name}
                 >
                   {dropdownItems.category_name}
                 </Dropdown.Item>
