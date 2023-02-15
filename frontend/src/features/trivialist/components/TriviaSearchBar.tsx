@@ -1,7 +1,11 @@
-import { Col, Dropdown, Input, Row } from "@nextui-org/react";
+import { AuthState } from "@/stores/auth";
+import { PlusOutlined } from "@ant-design/icons";
+import { Button, Col, Dropdown, Input, Row } from "@nextui-org/react";
 import React, { Key, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useCategory } from "../api/getCategory";
 import { TriviaCategory } from "../types";
+import { TriviaModal } from "./TriviaModal";
 
 type SelectionType = "all" | Set<Key>;
 
@@ -15,20 +19,23 @@ export const TriviaSearchBar: React.FC<TriviaSearchBarProps> = ({
   onFilterChange,
 }) => {
   const { data: catgories } = useCategory();
-  const [selected, setSelected] = React.useState<SelectionType>(new Set(["all"]));
+  const isAuthenticated = useSelector(
+    (state: AuthState) => state.isAuthenticated
+  );
+  const [selected, setSelected] = React.useState<SelectionType>(
+    new Set(["all"])
+  );
+  const [modalVisible, setModalVisible] = React.useState(false);
   const selectedValue = React.useMemo(
     () => Array.from(selected).join(", ").replaceAll("_", " "),
     [selected]
   );
 
   const getDropdownDisplayValue = () => {
-    let name = catgories?.find((x) => x.id == selectedValue)?.category_name
-    if (name)
-      return name
-    else
-      return "All"
-  }
-
+    let name = catgories?.find((x) => x.id == selectedValue)?.category_name;
+    if (name) return name;
+    else return "All";
+  };
 
   useEffect(() => {
     onFilterChange(selectedValue);
@@ -45,14 +52,11 @@ export const TriviaSearchBar: React.FC<TriviaSearchBarProps> = ({
             selectionMode="single"
             selectedKeys={selected}
             onSelectionChange={setSelected}
-            
           >
             {(item) => {
               let dropdownItems = item as TriviaCategory;
               return (
-                <Dropdown.Item
-                  key={dropdownItems.id}
-                >
+                <Dropdown.Item key={dropdownItems.id}>
                   {dropdownItems.category_name}
                 </Dropdown.Item>
               );
@@ -67,6 +71,12 @@ export const TriviaSearchBar: React.FC<TriviaSearchBarProps> = ({
           onChange={(e) => onSearchChange(e.target.value)}
         />
       </Col>
+      {isAuthenticated ? (
+        <Col css={{ width: "auto" }}>
+          <Button auto color="success" icon={<PlusOutlined />} onPress={() => setModalVisible(true)}/>
+          <TriviaModal visible={modalVisible} onClose={() => setModalVisible(false)} type="Add"/>
+        </Col>
+      ) : null}
     </Row>
   );
 };
