@@ -1,4 +1,4 @@
-import { Grid, Spinner, styled, Input, Row } from "@nextui-org/react";
+import { Grid, Spinner, styled, Input, Row, Loading } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useTrivia } from "../api/getTrivia";
 import { TriviaCard } from "./TriviaCard";
@@ -15,10 +15,16 @@ export const TrivaList = () => {
   return (
     <>
       <TriviaSearchBar onSearchChange={setSearch} onFilterChange={setFilter} />
-      {trivaQuery.isLoading ? (
-        <div className="w-full h-48 flex justify-center items-center">
-          <Spinner size="lg" />
-        </div>
+      {trivaQuery.isFetching ? (
+        <Grid.Container
+          justify="center"
+          alignItems="center"
+          css={{ height: "50vh" }}
+        >
+          <Grid>
+            <Loading size="xl">Loading</Loading>
+          </Grid>
+        </Grid.Container>
       ) : !trivaQuery.data ? (
         <>No Data</>
       ) : (

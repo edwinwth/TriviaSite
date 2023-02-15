@@ -20,7 +20,6 @@ export const getTrivia = ({page_size, search, trivia_category}: triviaParam): Pr
       params.push(`search=${search}`)
     }
     if (trivia_category && trivia_category !== "all") {
-      console.log(trivia_category)
       params.push(`trivia_category=${trivia_category}`)
     }
     if (params) {
