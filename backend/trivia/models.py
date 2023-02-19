@@ -1,6 +1,7 @@
 import datetime
 
 from django.db import models
+from django.conf import settings
 
 
 class TriviaCategory(models.Model):
@@ -17,6 +18,7 @@ class TriviaQuestion(models.Model):
     thumbs_down_count = models.IntegerField(default=0)
     creation_date = models.DateTimeField("Creation Date", auto_now_add=True)
     trivia_category = models.ManyToManyField(TriviaCategory)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.question_text
