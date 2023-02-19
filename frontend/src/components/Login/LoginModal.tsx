@@ -13,7 +13,7 @@ import {
   loginWithUsernameAndPassword,
   signUpWithUsernameAndPassword,
 } from "../../features/auth";
-import { authSuccess, authUnsuccess } from "../../stores/auth";
+import { authSuccess, authUnsuccess, setUser } from "../../stores/auth";
 import { useDispatch } from "react-redux";
 import { AxiosError } from "axios";
 
@@ -51,12 +51,16 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (type == "login") {
-      if (await loginWithUsernameAndPassword(credentials)) {
-        dispatch(authSuccess());
-        onClose();
-      } else {
-        dispatch(authUnsuccess());
-      }
+      await loginWithUsernameAndPassword(credentials)
+        .then((res) => {
+          dispatch(setUser(res));
+          dispatch(authSuccess());
+          onClose();
+        })
+        .catch((error) => {
+          const message = error.response?.data?.message || error.message;
+          alert(message);
+        });
     } else {
       await signUpWithUsernameAndPassword(credentials)
         .then((response) => {

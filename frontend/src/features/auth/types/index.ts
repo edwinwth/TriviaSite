@@ -1,7 +1,6 @@
 export type User = {
-  id: number;
-  user: string;
-  email: string;
+  user_id: number;
+  username: string;
 };
 export type UserResponse = BaseResponse & {
   user: User;

@@ -1,21 +1,15 @@
 import { axios } from "../../../lib/axios";
+import { User } from "../types";
 
 export type LoginCredentialsDTO = {
   username: string;
   password: string;
 };
 
+type LoginResponse = User
+
 export const loginWithUsernameAndPassword = (
   data: LoginCredentialsDTO
-): Promise<boolean> => {
-  return axios
-    .post("/accounts/login/", data)
-    .then((response) => {
-      return true;
-    })
-    .catch((error) => {
-      const message = error.response?.data?.message || error.message;
-      alert(message);
-      return false;
-    });
+): Promise<LoginResponse> => {
+  return axios.post("/accounts/login/", data);
 };

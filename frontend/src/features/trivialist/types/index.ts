@@ -13,6 +13,8 @@ export type Trivia = {
   thumbs_down_count: string;
   creation_date: Date;
   trivia_category: number[];
+  created_by: string;
+  created_by_id: number;
 }
 
 export type TriviaCategory = {

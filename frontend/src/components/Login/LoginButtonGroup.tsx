@@ -5,8 +5,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { LoginModal } from "./LoginModal";
 import { logout } from "../../features/auth";
 
-interface MainLayoutProps {}
-
 export const LoginButtonGroup: React.FC = () => {
   const dispatch = useDispatch()
   const isAuthenticated = useSelector(

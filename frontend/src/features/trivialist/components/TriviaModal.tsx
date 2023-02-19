@@ -16,11 +16,12 @@ import {
   LoginOutlined,
   QuestionOutlined,
 } from "@ant-design/icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AxiosError } from "axios";
 import { useCategory } from "../api/getCategory";
 import { TriviaCategory } from "../types";
 import { TriviaData, useAddTrivia } from "../api/addTrivia";
+import { AuthState } from "@/stores/auth";
 
 interface TriviaModalProps {
   visible: boolean;
@@ -92,6 +93,7 @@ export const TriviaModal: React.FC<TriviaModalProps> = ({
     let values = Array.from(selected) as number[];
     setTriviaFields({ ...triviaFields, trivia_category: values });
   }, [selected]);
+
 
   return (
     <Modal
