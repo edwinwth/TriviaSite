@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, filters
+from rest_framework import generics, filters, permissions
 from rest_framework.pagination import PageNumberPagination
 
 from .models import TriviaCategory, TriviaQuestion
@@ -21,12 +21,16 @@ def index(request):
 
 
 class QuestionList(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = TriviaQuestion.objects.all()
     serializer_class = TriviaQuestionSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['question_text']
     filterset_fields = ['trivia_category']
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
